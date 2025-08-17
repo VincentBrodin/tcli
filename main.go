@@ -12,7 +12,10 @@ import (
 	"github.com/VincentBrodin/tcli/app"
 )
 
-const WORD_FILE_URL string = "https://raw.githubusercontent.com/VincentBrodin/godo/refs/heads/main/words.json"
+const (
+	WORD_FILE_URL  = "https://raw.githubusercontent.com/VincentBrodin/tcli/refs/heads/main/words.json"
+	WORD_FILE_NAME = "words.json"
+)
 
 func main() {
 	length := flag.Int("l", 10, "How length of the test")
@@ -24,22 +27,26 @@ func main() {
 		os.Exit(1)
 	}
 	execDir := filepath.Dir(execPath)
-	wordFile := filepath.Join(execDir, "words.json")
+	wordFile := filepath.Join(execDir, WORD_FILE_NAME)
 
 	// Load the word chain
 	file, err := os.Open(wordFile)
-	if os.ErrNotExist == err {
+	if os.IsNotExist(err) {
 		fmt.Println("Could not find word file, grabbing it from ", WORD_FILE_URL)
 		if err := getWordFile(wordFile); err != nil {
 			fmt.Println("Failed to get word file: ", err)
 			os.Exit(2)
-		} else {
-			file, err = os.Open(wordFile)
 		}
-	}
-	if err != nil {
+	} else if err != nil {
 		fmt.Println("Could not open words.json: ", err)
 		os.Exit(3)
+	} else {
+		file.Close()
+	}
+
+	file, err = os.Open(wordFile)
+	if err != nil {
+		fmt.Println("Failed to open file")
 	}
 	defer file.Close()
 
