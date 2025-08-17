@@ -2,6 +2,8 @@
 ---
 Typing test without leaving the terminal
 
+![demo](./assets/demo.gif)
+
 ## Usage
 
 Default settings
